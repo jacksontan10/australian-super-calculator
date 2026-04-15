@@ -1,0 +1,10 @@
+var _a;
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+/** GitHub Pages project URLs are /<repo>/; set GITHUB_PAGES=true in CI (see workflow). */
+var repoSegment = (_a = process.env.GITHUB_REPOSITORY) === null || _a === void 0 ? void 0 : _a.split("/")[1];
+var base = process.env.GITHUB_PAGES === "true" && repoSegment ? "/".concat(repoSegment, "/") : "/";
+export default defineConfig({
+    base: base,
+    plugins: [react()]
+});

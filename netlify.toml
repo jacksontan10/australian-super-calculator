@@ -1,0 +1,9 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA: all routes serve index.html (hash routes work without this; safe for future paths)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
