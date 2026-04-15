@@ -1,7 +1,6 @@
 import { exceedsFhssAnnualEligibleCapModel, getVoluntaryConcessionalModelTotal } from "../calculator/fhssCaps";
 import type { SuperCalculationResult, SuperInputs } from "../calculator/types";
 import { InfoTooltip } from "./InfoTooltip";
-import { MarginalTaxBracketTable } from "./MarginalTaxBracketTable";
 
 interface ResultsSummaryProps {
   result: SuperCalculationResult;
@@ -12,19 +11,14 @@ const dollars = (value: number): string =>
   value.toLocaleString("en-AU", { style: "currency", currency: "AUD", maximumFractionDigits: 2 });
 
 export const ResultsSummary = ({ result, inputs }: ResultsSummaryProps) => {
-  const { contributionRoom, taxImpact, sgProjection } = result;
+  const { contributionRoom, sgProjection } = result;
   const voluntaryCcModel = getVoluntaryConcessionalModelTotal(inputs);
   const fhssAnnualRisk = exceedsFhssAnnualEligibleCapModel(inputs);
   const concessionalBreached = contributionRoom.overCapBy > 0;
-  const thresholdDisplay = taxImpact.division293IncomeThreshold.toLocaleString("en-AU", {
-    style: "currency",
-    currency: "AUD",
-    maximumFractionDigits: 0
-  });
 
   return (
     <section className="card">
-      <h2>Contribution and Tax Summary</h2>
+      <h2>Contribution summary</h2>
       <div className="stats">
         <div>
           <span className="stat-label">
@@ -43,19 +37,14 @@ export const ResultsSummary = ({ result, inputs }: ResultsSummaryProps) => {
             Effective concessional cap
             <InfoTooltip label="Effective concessional cap">
               <p>
-                The maximum concessional space this calculator uses after a simple carry-forward
-                rule.
-              </p>
-              <p>
-                <strong>Total super balance</strong> is the total value of your super interests at a
-                point in time (Australian Taxation Office definition). Here it is only the balance
-                at the prior 30 June, used to decide if carry-forward is applied.
+                Base concessional cap for <strong>{contributionRoom.capYearLabel}</strong> from this app&apos;s snapshot,
+                plus carry-forward you entered only when prior-30 June TSB is above zero and under{" "}
+                <strong>$500,000</strong>; otherwise carry-forward is ignored here.
               </p>
               <span className="info-tooltip__formula">
-                effective cap = base concessional cap for the selected year{"\n"}
-                + carry-forward entered (only if total super balance on prior 30 June is between
-                zero and five hundred thousand dollars){"\n"}
-                otherwise effective cap = base cap only
+                {`effective cap = base cap (${contributionRoom.capYearLabel})\n`}
+                {`+ carry-forward if 0 < TSB (prior 30 June) < $500k\n`}
+                {`else base cap only`}
               </span>
             </InfoTooltip>
           </span>
@@ -67,11 +56,11 @@ export const ResultsSummary = ({ result, inputs }: ResultsSummaryProps) => {
             <InfoTooltip label="Total projected concessional contributions">
               <p>
                 Sum of projected employer super guarantee to 30 June, total salary sacrifice already
-                arranged, total new salary sacrifice planned, and planned lump-sum deductible contributions.
+                arranged, and planned lump-sum deductible contributions.
               </p>
               <span className="info-tooltip__formula">
                 total = projected employer super total + salary sacrifice already arranged{"\n"}
-                + planned salary sacrifice + planned lump sum
+                + planned lump sum
               </span>
             </InfoTooltip>
           </span>
@@ -120,72 +109,6 @@ export const ResultsSummary = ({ result, inputs }: ResultsSummaryProps) => {
             </InfoTooltip>
           </span>
           <strong>{dollars(contributionRoom.overCapBy)}</strong>
-        </div>
-        <div>
-          <span className="stat-label">
-            Marginal tax rate used
-            <InfoTooltip label="Marginal tax rate used">
-              <p>
-                Percentage applied to planned salary sacrifice plus planned lump sum to estimate
-                personal income tax saved.
-              </p>
-              <MarginalTaxBracketTable />
-            </InfoTooltip>
-          </span>
-          <strong>{taxImpact.marginalTaxRateUsed}%</strong>
-        </div>
-        <div>
-          <span className="stat-label">
-            Estimated personal tax saved
-            <InfoTooltip label="Estimated personal tax saved">
-              <p>
-                Rough personal income tax you would not pay on income equal to planned salary
-                sacrifice plus planned lump sum.
-              </p>
-              <span className="info-tooltip__formula">
-                saved ≈ (planned salary sacrifice + planned lump sum) × (marginal percentage ÷ 100)
-              </span>
-            </InfoTooltip>
-          </span>
-          <strong>{dollars(taxImpact.estimatedPersonalTaxSaved)}</strong>
-        </div>
-        <div>
-          <span className="stat-label">
-            Estimated contributions tax
-            <InfoTooltip label="Estimated contributions tax">
-              <p>
-                Tax estimated inside super on the planned concessional slice: 15% contributions tax,
-                plus an extra 15% when the Division 293 estimate is enabled.
-              </p>
-              <span className="info-tooltip__formula">
-                fund tax = 15% × (planned salary sacrifice + planned lump sum){"\n"}
-                + if Division 293 on: 15% × same planned amount{"\n"}
-                total contributions tax = fund tax + Division 293 tax
-              </span>
-              <p>
-                Division 293 threshold for income in this snapshot: about <strong>{thresholdDisplay}</strong>.
-                Planned amount used for both extra taxes here:{" "}
-                <strong>{dollars(taxImpact.plannedConcessionalForTax)}</strong>. Division 293 portion
-                in this run: <strong>{dollars(taxImpact.division293Tax)}</strong>.
-              </p>
-            </InfoTooltip>
-          </span>
-          <strong>{dollars(taxImpact.totalContributionTax)}</strong>
-        </div>
-        <div>
-          <span className="stat-label">
-            Net tax benefit
-            <InfoTooltip label="Net tax benefit">
-              <p>
-                Estimated personal tax saved minus estimated tax paid inside super on the planned
-                concessional slice.
-              </p>
-              <span className="info-tooltip__formula">
-                net benefit = personal tax saved − total contributions tax
-              </span>
-            </InfoTooltip>
-          </span>
-          <strong>{dollars(taxImpact.netTaxBenefit)}</strong>
         </div>
       </div>
       {fhssAnnualRisk || concessionalBreached ? (

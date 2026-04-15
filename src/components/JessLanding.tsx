@@ -15,32 +15,31 @@ export const JessLanding = ({ onOpenCalculator }: JessLandingProps) => {
         <p className="jess-landing__attribution">by Jackson</p>
         <h1 className="jess-landing__title">Hey Jess</h1>
         <p className="jess-landing__lead">
-          Wondering how much <strong>extra salary sacrifice</strong> you could still tuck in this
-          financial year—without accidentally blowing past your <strong>concessional cap</strong>? This
-          little tool lines up employer super, what you already sacrifice, and anything you are
-          thinking of adding, so you can see the headroom at a glance.
+          Wondering how much extra <strong>salary sacrifice</strong> you could still tuck in this financial
+          year—without accidentally blowing past your <strong>concessional cap</strong>? This little tool lines
+          up <strong>employer super</strong>, what you already sacrifice, and anything you are thinking of
+          adding, so you can see the <strong>headroom</strong> at a glance. Have your <strong>super fund</strong>{" "}
+          (app or website), <strong>ATO</strong> details (e.g. myGov), and <strong>payroll</strong> figures
+          ready.
         </p>
         <ul className="jess-landing__bullets">
           <li>
             <span className="jess-landing__bullet-icon" aria-hidden="true">
               ✦
             </span>
-            See how much concessional room is left (with carry-forward rules simplified the way the
-            app explains them).
+            <span className="jess-landing__bullet-text">
+              See how much <strong>concessional room</strong> is left (with <strong>carry-forward</strong>{" "}
+              rules simplified the way the app explains them).
+            </span>
           </li>
           <li>
             <span className="jess-landing__bullet-icon" aria-hidden="true">
               ✦
             </span>
-            Get a per-pay salary sacrifice idea for the rest of the year—handy if you want to max out
-            without guesswork.
-          </li>
-          <li>
-            <span className="jess-landing__bullet-icon" aria-hidden="true">
-              ✦
+            <span className="jess-landing__bullet-text">
+              Get a <strong>per-pay salary sacrifice</strong> idea for the rest of the year—handy if you want
+              to <strong>max out</strong> without guesswork.
             </span>
-            Still only an educational estimate—not personal advice—so you stay in charge with your
-            fund and the ATO as the real referees.
           </li>
         </ul>
         <button type="button" className="jess-landing__cta" onClick={onOpenCalculator}>
@@ -49,10 +48,6 @@ export const JessLanding = ({ onOpenCalculator }: JessLandingProps) => {
             →
           </span>
         </button>
-        <p className="jess-landing__footnote">
-          Numbers stay in your browser (they auto-save locally). Tap the button whenever you are
-          ready—no rush, no pressure, just maths wearing a slightly nicer outfit.
-        </p>
       </div>
     </div>
   );

@@ -44,7 +44,7 @@ export const FhssContributionNotice = ({ values, concessionalOverCapBy }: FhssCo
       </p>
       <p>
         For a rough check only, the voluntary concessional fields in this app (salary sacrifice
-        already arranged + total new salary sacrifice planned + planned lump sum) add up to{" "}
+        already arranged + planned lump sum) add up to{" "}
         <strong>{dollars(voluntaryCcTotal)}</strong>. If you treated that whole amount as eligible
         concessional contributions for FHSS in one year, it would{" "}
         {exceedsFhssAnnual ? (

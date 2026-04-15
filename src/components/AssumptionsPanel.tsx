@@ -14,12 +14,8 @@ export const AssumptionsPanel = ({ capSourceUrl, capDataLastVerifiedDate }: Assu
           and personal deductible contributions.
         </li>
         <li>
-          Contributions tax is estimated at 15%, with an optional Division 293 estimate adding
-          another 15% on the same planned slice when that option is on.
-        </li>
-        <li>
-          Automatic marginal tax rate uses simplified resident brackets and does not include
-          Medicare levy or offsets.
+          This calculator does not estimate personal income tax, contributions tax, or Division 293;
+          it focuses on concessional cap headroom and payment timing.
         </li>
         <li>
           Carry-forward concessional cap is entered by you and only applied when total super balance

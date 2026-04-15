@@ -36,13 +36,14 @@ export const SalarySacrificeCapFill = ({ fill }: SalarySacrificeCapFillProps) =>
         <InfoTooltip label="Salary sacrifice cap fill">
           <p>
             Uses the same <strong>cap remaining</strong> as the summary above (effective concessional
-            cap minus projected employer super guarantee, total salary sacrifice already arranged, your
-            total new salary sacrifice planned, and planned lump sum).
+            cap minus projected employer super guarantee, total salary sacrifice already arranged, and
+            planned lump sum).
           </p>
           <p>
             It divides that headroom across the number of <strong>salary sacrifice payment dates</strong>{" "}
             still expected before <strong>30 June</strong> for the selected financial year, using the
-            payment frequency you chose in the inputs.
+            same <strong>super guarantee payment frequency</strong> from your inputs (this model
+            assumes salary sacrifice aligns with that pay cycle).
           </p>
           <span className="info-tooltip__formula">
             per payment = floor(100 × cap remaining ÷ payments left) ÷ 100{"\n"}

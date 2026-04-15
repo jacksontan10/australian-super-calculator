@@ -15,12 +15,7 @@ export const FHSS_ATO_SCHEME_URL =
  * Used only for an educational comparison to the FHSS per-year eligible cap—not eligibility logic.
  */
 export const getVoluntaryConcessionalModelTotal = (inputs: SuperInputs): number =>
-  Math.max(
-    0,
-    inputs.existingSalarySacrifice +
-      inputs.plannedSalarySacrifice +
-      inputs.plannedLumpSumDeductible
-  );
+  Math.max(0, inputs.existingSalarySacrifice + inputs.plannedLumpSumDeductible);
 
 export const exceedsFhssAnnualEligibleCapModel = (inputs: SuperInputs): boolean =>
   getVoluntaryConcessionalModelTotal(inputs) > FHSS_ANNUAL_ELIGIBLE_CONTRIBUTIONS_CAP;

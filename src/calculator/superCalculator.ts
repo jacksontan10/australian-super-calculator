@@ -2,13 +2,10 @@ import type {
   SgPaymentFrequency,
   SalarySacrificeCapFillResult,
   SuperCalculationResult,
-  SuperInputs,
-  TaxImpactResult
+  SuperInputs
 } from "./types";
 import { APP_FINANCIAL_YEAR, getCapForYear, getDefaultYear } from "./atoCapData";
 
-const CONTRIBUTIONS_TAX_RATE = 0.15;
-const DIV293_EXTRA_RATE = 0.15;
 const CARRY_FORWARD_BALANCE_THRESHOLD = 500000;
 
 const roundCurrency = (value: number): number => Math.round(value * 100) / 100;
@@ -116,51 +113,6 @@ const computeSalarySacrificeCapFill = (
   };
 };
 
-export const getAutoMarginalTaxRate = (annualIncome: number): number => {
-  if (annualIncome <= 18200) {
-    return 0;
-  }
-  if (annualIncome <= 45000) {
-    return 16;
-  }
-  if (annualIncome <= 135000) {
-    return 30;
-  }
-  if (annualIncome <= 190000) {
-    return 37;
-  }
-  return 45;
-};
-
-const getTaxImpact = (
-  inputs: SuperInputs,
-  plannedConcessional: number,
-  marginalTaxRateUsed: number,
-  division293IncomeThreshold: number
-): TaxImpactResult => {
-  const taxableIncomeReduction = plannedConcessional;
-  const marginalRateDecimal = marginalTaxRateUsed / 100;
-  const fundContributionsTax = plannedConcessional * CONTRIBUTIONS_TAX_RATE;
-  const division293Tax = inputs.includeDivision293
-    ? plannedConcessional * DIV293_EXTRA_RATE
-    : 0;
-  const totalContributionTax = fundContributionsTax + division293Tax;
-  const estimatedPersonalTaxSaved = plannedConcessional * marginalRateDecimal;
-  const netTaxBenefit = estimatedPersonalTaxSaved - totalContributionTax;
-
-  return {
-    marginalTaxRateUsed,
-    taxableIncomeReduction: roundCurrency(taxableIncomeReduction),
-    fundContributionsTax: roundCurrency(fundContributionsTax),
-    division293Tax: roundCurrency(division293Tax),
-    totalContributionTax: roundCurrency(totalContributionTax),
-    estimatedPersonalTaxSaved: roundCurrency(estimatedPersonalTaxSaved),
-    netTaxBenefit: roundCurrency(netTaxBenefit),
-    division293IncomeThreshold,
-    plannedConcessionalForTax: roundCurrency(plannedConcessional)
-  };
-};
-
 export const calculateSuperContribution = (inputs: SuperInputs): SuperCalculationResult => {
   const defaultYear = getDefaultYear();
   const selectedYearEntry = getCapForYear(APP_FINANCIAL_YEAR);
@@ -173,22 +125,16 @@ export const calculateSuperContribution = (inputs: SuperInputs): SuperCalculatio
     inputs.totalSuperBalanceLast30June < CARRY_FORWARD_BALANCE_THRESHOLD;
   const effectiveConcessionalCap = baseConcessionalCap +
     (carryForwardEligible ? clampNonNegative(inputs.carryForwardAvailable) : 0);
-  const marginalTaxRateUsed = inputs.useAutoMarginalTaxRate
-    ? getAutoMarginalTaxRate(inputs.annualIncome)
-    : clampNonNegative(inputs.manualMarginalTaxRate);
-  const plannedConcessional =
-    clampNonNegative(inputs.plannedSalarySacrifice) +
-    clampNonNegative(inputs.plannedLumpSumDeductible);
+  const plannedConcessional = clampNonNegative(inputs.plannedLumpSumDeductible);
   const totalConcessionalUsed =
     clampNonNegative(sgProjection.projectedEmployerSgTotal) +
     clampNonNegative(inputs.existingSalarySacrifice) +
     plannedConcessional;
   const capRemaining = clampNonNegative(effectiveConcessionalCap - totalConcessionalUsed);
   const overCapBy = clampNonNegative(totalConcessionalUsed - effectiveConcessionalCap);
-  const division293IncomeThreshold = activeYearEntry?.division293Threshold ?? 250000;
   const salarySacrificeCapFill = computeSalarySacrificeCapFill(
     APP_FINANCIAL_YEAR,
-    inputs.salarySacrificeProjectionFrequency,
+    inputs.sgPaymentFrequency,
     capRemaining
   );
 
@@ -203,23 +149,10 @@ export const calculateSuperContribution = (inputs: SuperInputs): SuperCalculatio
       "Lump-sum deductible contributions require a valid Notice of Intent accepted by your super fund."
     );
   }
-  if (inputs.includeDivision293) {
-    warnings.push(
-      "Division 293 has been included as an estimate only. Confirm thresholds and liability using current ATO guidance."
-    );
-  }
   if (!carryForwardEligible && inputs.carryForwardAvailable > 0) {
     warnings.push(
       "Carry-forward cap amount entered but total super balance appears ineligible for carry-forward usage."
     );
-  }
-  if (!inputs.includeDivision293 && inputs.annualIncome >= division293IncomeThreshold) {
-    warnings.push(
-      "Your income appears high enough that Division 293 may apply. Consider enabling the estimate toggle."
-    );
-  }
-  if (plannedConcessional === 0) {
-    warnings.push("No additional concessional contributions are currently planned.");
   }
   if (inputs.sgPaymentAmount <= 0 && sgProjection.paymentsRemainingToEofy > 0) {
     warnings.push(
@@ -263,12 +196,6 @@ export const calculateSuperContribution = (inputs: SuperInputs): SuperCalculatio
       projectedEmployerSgTotal: roundCurrency(sgProjection.projectedEmployerSgTotal)
     },
     salarySacrificeCapFill,
-    taxImpact: getTaxImpact(
-      inputs,
-      plannedConcessional,
-      marginalTaxRateUsed,
-      division293IncomeThreshold
-    ),
     warnings
   };
 };
